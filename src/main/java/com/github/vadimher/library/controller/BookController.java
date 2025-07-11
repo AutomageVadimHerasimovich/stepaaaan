@@ -2,21 +2,24 @@ package com.github.vadimher.library.controller;
 
 import com.github.vadimher.library.entity.Book;
 import com.github.vadimher.library.service.BookService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/books")
+@RequestMapping("/api/library")
 public class BookController {
+    private static final Logger logger = LoggerFactory.getLogger(BookController.class);
     private final BookService bookService;
 
     public BookController(BookService bookService) {
         this.bookService = bookService;
     }
 
-    @GetMapping
+    @GetMapping("/allbooks")
     public List<Book> getAllBooks() {
         return bookService.findAll();
     }
@@ -35,8 +38,9 @@ public class BookController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/addbook")
     public Book addBook(@RequestBody Book book) {
+        logger.info("\nAdding book controller: " + book.toString());
         return bookService.save(book);
     }
 

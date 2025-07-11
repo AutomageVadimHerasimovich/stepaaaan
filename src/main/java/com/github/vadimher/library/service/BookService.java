@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 public class BookService {
+    private static final Logger logger = Logger.getLogger(BookService.class.getName());
     private final BookRepository bookRepository;
 
     public BookService(BookRepository bookRepository) {
@@ -28,6 +30,7 @@ public class BookService {
     }
 
     public Book save(Book book) {
+        logger.info("\nSaving book: " + book.toString());
         return bookRepository.save(book);
     }
 

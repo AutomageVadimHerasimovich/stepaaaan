@@ -1,12 +1,15 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/library
+    url: jdbc:postgresql://localhost:5432/library_db
     username: postgres
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
+  docker:
+    compose:
+      enabled: false
 
 springdoc:
   api-docs:
