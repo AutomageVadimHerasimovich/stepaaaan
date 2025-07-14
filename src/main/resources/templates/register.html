@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .register-container {
+            background: #fff;
+            padding: 2.5rem 2rem;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(40, 60, 120, 0.18);
+            width: 370px;
+            text-align: center;
+        }
+        .register-container h2 {
+            margin-bottom: 1.5rem;
+            color: #2575fc;
+            font-weight: 700;
+        }
+        .register-container label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 1rem;
+            text-align: left;
+        }
+        .register-container input {
+            width: 100%;
+            padding: 0.7rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .register-container input:focus {
+            border-color: #2575fc;
+            outline: none;
+        }
+        .register-container button {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 0.7rem;
+            transition: background 0.2s;
+        }
+        .register-container button:hover {
+            background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+        }
+        .login-link {
+            display: block;
+            margin-top: 1rem;
+            color: #2575fc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .login-link:hover {
+            color: #6a11cb;
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 1rem;
+            font-size: 0.98rem;
+        }
+        .success-message {
+            color: #27ae60;
+            margin-bottom: 1rem;
+            font-size: 0.98rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Регистрация</h2>
+        <form method="post" action="/register">
+            <div th:if="${error}" class="error-message" th:text="${error}"></div>
+            <div th:if="${success}" class="success-message" th:text="${success}"></div>
+            <label for="username">Имя пользователя</label>
+            <input type="text" id="username" name="username" required autocomplete="username">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" required autocomplete="new-password">
+            <label for="confirmPassword">Повторите пароль</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password">
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <a class="login-link" href="/login">Уже есть аккаунт? Войти</a>
+    </div>
+</body>
+</html>

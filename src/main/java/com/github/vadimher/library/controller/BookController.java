@@ -2,17 +2,15 @@ package com.github.vadimher.library.controller;
 
 import com.github.vadimher.library.entity.Book;
 import com.github.vadimher.library.service.BookService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/library")
 public class BookController {
-    private static final Logger logger = LoggerFactory.getLogger(BookController.class);
     private final BookService bookService;
 
     public BookController(BookService bookService) {
@@ -39,22 +37,27 @@ public class BookController {
     }
 
     @PostMapping("/addbook")
+    @PreAuthorize("hasRole('ADMIN')")
     public Book addBook(@RequestBody Book book) {
-        logger.info("\nAdding book controller: " + book.toString());
         return bookService.save(book);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
         return bookService.findById(id)
                 .map(existing -> {
-                    book.setId(id);
-                    return ResponseEntity.ok(bookService.save(book));
+                    existing.setTitle(book.getTitle());
+                    existing.setAuthor(book.getAuthor());
+                    existing.setIsbn(book.getIsbn());
+                    existing.setDescription(book.getDescription());
+                    existing.setGenre(book.getGenre());
+                    return ResponseEntity.ok(bookService.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
         bookService.delete(id);
         return ResponseEntity.noContent().build();

@@ -2,15 +2,15 @@ package com.github.vadimher.library.service;
 
 import com.github.vadimher.library.entity.Book;
 import com.github.vadimher.library.repository.BookRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Service
 public class BookService {
-    private static final Logger logger = Logger.getLogger(BookService.class.getName());
     private final BookRepository bookRepository;
 
     public BookService(BookRepository bookRepository) {
@@ -30,8 +30,11 @@ public class BookService {
     }
 
     public Book save(Book book) {
-        logger.info("\nSaving book: " + book.toString());
-        return bookRepository.save(book);
+        try {
+            return bookRepository.save(book);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("ISBN busy");
+        }
     }
 
     public void delete(Long id) {
