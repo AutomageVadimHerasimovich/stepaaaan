@@ -1,0 +1,13 @@
+package com.github.vadimher.library.dto;
+
+import lombok.Data;
+
+@Data
+public class BookDto {
+    private Long id;
+    private String title;
+    private String author;
+    private String isbn;
+    private String genre;
+    private String description;
+}
