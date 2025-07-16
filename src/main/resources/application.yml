@@ -10,6 +10,9 @@ spring:
   docker:
     compose:
       enabled: false
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
 
 springdoc:
   api-docs:

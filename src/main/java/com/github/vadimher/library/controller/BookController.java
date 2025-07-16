@@ -7,16 +7,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
+import java.util.Set;
 import com.github.vadimher.library.mapper.BookMapper;
 import com.github.vadimher.library.dto.BookDto;
+import com.github.vadimher.library.service.BusyBooksService;
 
 @RestController
 @RequestMapping("/api/library")
 public class BookController {
     private final BookService bookService;
+    private final BusyBooksService busyBooksService;
 
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, BusyBooksService busyBooksService) {
         this.bookService = bookService;
+        this.busyBooksService = busyBooksService;
     }
 
     @GetMapping("/allbooks")
@@ -63,5 +67,14 @@ public class BookController {
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
         bookService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/freebooks")
+    public List<BookDto> getFreeBooks() {
+        Set<Long> busyIds = busyBooksService.getBusyBookIds();
+        return bookService.findAll().stream()
+                .filter(book -> !busyIds.contains(book.getId()))
+                .map(BookMapper.INSTANCE::bookToBookDto)
+                .toList();
     }
 }

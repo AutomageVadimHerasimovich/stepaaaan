@@ -3,6 +3,8 @@ version: "3.8"
 services:
   backend:
     image: library_backend
+    networks:
+      - shared-net
     ports:
       - "8080:8080"
     build:
@@ -16,6 +18,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
   library_db:
     image: postgres:latest
+    networks:
+      - shared-net
     container_name: library_db
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -33,3 +37,7 @@ services:
 
 volumes:
   db-data:
+
+networks:
+  shared-net:
+    external: true
