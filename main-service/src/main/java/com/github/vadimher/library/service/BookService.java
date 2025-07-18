@@ -1,7 +1,9 @@
 package com.github.vadimher.library.service;
 
 import com.github.vadimher.library.entity.Book;
+import com.github.vadimher.library.service.BookPublisher;
 import com.github.vadimher.library.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +13,12 @@ import java.util.Optional;
 @Service
 public class BookService {
     private final BookRepository bookRepository;
+    private final BookPublisher bookPublisher;
 
-    public BookService(BookRepository bookRepository) {
+    @Autowired
+    public BookService(BookRepository bookRepository, BookPublisher bookPublisher) {
         this.bookRepository = bookRepository;
+        this.bookPublisher = bookPublisher;
     }
 
     public List<Book> findAll() {
@@ -30,7 +35,9 @@ public class BookService {
 
     public Book save(Book book) {
         try {
-            return bookRepository.save(book);
+            Book saved = bookRepository.save(book);
+            bookPublisher.sendBookId(saved.getId());
+            return saved;
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("ISBN busy");
         }

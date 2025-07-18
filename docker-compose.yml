@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  backend:
+  library-backend:
     image: library_backend
     networks:
       - shared-net
@@ -34,6 +34,39 @@ services:
       retries: 5
     volumes:
        - db-data:/var/lib/postgresql/data
+  record-service-backend:
+    image: record_service_backend
+    build:
+      context: ./record-service
+    networks:
+      - shared-net
+    ports:
+      - "8081:8080"
+    depends_on:
+      - record-service-db
+      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://record-service-db:5432/record_service_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_RABBITMQ_HOST: rabbitmq
+  record-service-db:
+    image: postgres:latest
+    networks:
+      - shared-net
+    environment:
+      POSTGRES_DB: record_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+  rabbitmq:
+    image: rabbitmq:3-management
+    networks:
+      - shared-net
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   db-data:

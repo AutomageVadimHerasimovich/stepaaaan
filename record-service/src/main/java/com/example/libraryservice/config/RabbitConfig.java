@@ -1,11 +1,11 @@
-package com.github.vadimher.library.config;
+package com.example.libraryservice.config;
 
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
 @Configuration
 public class RabbitConfig {
@@ -15,8 +15,8 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue bookIdQueue() {
-        return new Queue("bookIdQueue", true);
+    public Queue busyBooksRequestQueue() {
+        return new Queue("busyBooksRequestQueue", true);
     }
 
     @Bean

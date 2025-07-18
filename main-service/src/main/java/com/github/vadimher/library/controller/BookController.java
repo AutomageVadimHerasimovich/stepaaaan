@@ -5,6 +5,7 @@ import com.github.vadimher.library.entity.Book;
 import com.github.vadimher.library.mapper.BookMapper;
 import com.github.vadimher.library.service.BookService;
 import com.github.vadimher.library.service.BusyBooksService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,12 @@ import java.util.Set;
 public class BookController {
     private final BookService bookService;
     private final BusyBooksService busyBooksService;
+    private final RabbitTemplate rabbitTemplate;
 
-    public BookController(BookService bookService, BusyBooksService busyBooksService) {
+    public BookController(BookService bookService, BusyBooksService busyBooksService, RabbitTemplate rabbitTemplate) {
         this.bookService = bookService;
         this.busyBooksService = busyBooksService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @GetMapping("/allbooks")
@@ -71,6 +74,9 @@ public class BookController {
 
     @GetMapping("/freebooks")
     public List<BookDto> getFreeBooks() {
+        // Запросить актуальный список занятых книг через RabbitMQ
+        rabbitTemplate.convertAndSend("busyBooksRequestQueue", "get");
+        // Подождать обновления busyBooksService (в реальном проекте — асинхронно, тут — сразу возвращаем текущий список)
         Set<Long> busyIds = busyBooksService.getBusyBookIds();
         return bookService.findAll().stream()
                 .filter(book -> !busyIds.contains(book.getId()))
