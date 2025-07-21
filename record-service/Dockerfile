@@ -9,4 +9,4 @@ COPY wait-for-it.sh /app/wait-for-it.sh
 
 EXPOSE 8081
 
-ENTRYPOINT ["sh", "-c", "./wait-for-it.sh library_service_db:5433 -- java -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "./wait-for-it.sh record_service_db:5433 -- java -jar app.jar"]

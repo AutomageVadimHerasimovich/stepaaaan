@@ -8,7 +8,14 @@ import com.github.vadimher.library.service.BusyBooksService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
@@ -19,48 +26,51 @@ public class BookController {
     private final BookService bookService;
     private final BusyBooksService busyBooksService;
     private final RabbitTemplate rabbitTemplate;
+    private final BookMapper bookMapper;
 
-    public BookController(BookService bookService, BusyBooksService busyBooksService, RabbitTemplate rabbitTemplate) {
+    public BookController(BookService bookService, BusyBooksService busyBooksService,
+                          RabbitTemplate rabbitTemplate, BookMapper bookMapper) {
         this.bookService = bookService;
         this.busyBooksService = busyBooksService;
         this.rabbitTemplate = rabbitTemplate;
+        this.bookMapper = bookMapper;
     }
 
     @GetMapping("/allbooks")
     public List<BookDto> getAllBooks() {
         return bookService.findAll().stream()
-                .map(BookMapper.INSTANCE::bookToBookDto)
+                .map(bookMapper::bookToBookDto)
                 .toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
         return bookService.findById(id)
-                .map(book -> ResponseEntity.ok(BookMapper.INSTANCE.bookToBookDto(book)))
+                .map(book -> ResponseEntity.ok(bookMapper.bookToBookDto(book)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/isbn/{isbn}")
     public ResponseEntity<BookDto> getBookByIsbn(@PathVariable String isbn) {
         return bookService.findByIsbn(isbn)
-                .map(book -> ResponseEntity.ok(BookMapper.INSTANCE.bookToBookDto(book)))
+                .map(book -> ResponseEntity.ok(bookMapper.bookToBookDto(book)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/addbook")
     @PreAuthorize("hasRole('ADMIN')")
     public BookDto addBook(@RequestBody BookDto bookDto) {
-        Book book = BookMapper.INSTANCE.bookDtoToBook(bookDto);
-        return BookMapper.INSTANCE.bookToBookDto(bookService.save(book));
+        Book book = bookMapper.bookDtoToBook(bookDto);
+        return bookMapper.bookToBookDto(bookService.save(book));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @RequestBody BookDto bookDto) {
         return bookService.findById(id)
                 .map(existing -> {
-                    Book updated = BookMapper.INSTANCE.bookDtoToBook(bookDto);
+                    Book updated = bookMapper.bookDtoToBook(bookDto);
                     updated.setId(existing.getId());
-                    return ResponseEntity.ok(BookMapper.INSTANCE.bookToBookDto(bookService.save(updated)));
+                    return ResponseEntity.ok(bookMapper.bookToBookDto(bookService.save(updated)));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -80,7 +90,7 @@ public class BookController {
         Set<Long> busyIds = busyBooksService.getBusyBookIds();
         return bookService.findAll().stream()
                 .filter(book -> !busyIds.contains(book.getId()))
-                .map(BookMapper.INSTANCE::bookToBookDto)
+                .map(bookMapper::bookToBookDto)
                 .toList();
     }
 }
