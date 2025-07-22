@@ -1,7 +1,7 @@
 package com.github.vadimher.library.controller;
 
 import com.github.vadimher.library.dto.BookDto;
-import com.github.vadimher.library.entity.Book;
+import com.github.vadimher.library.entity.BookEntity;
 import com.github.vadimher.library.mapper.BookMapper;
 import com.github.vadimher.library.service.BookService;
 import com.github.vadimher.library.service.BusyBooksService;
@@ -60,7 +60,7 @@ public class BookController {
     @PostMapping("/addbook")
     @PreAuthorize("hasRole('ADMIN')")
     public BookDto addBook(@RequestBody BookDto bookDto) {
-        Book book = bookMapper.bookDtoToBook(bookDto);
+        BookEntity book = bookMapper.bookDtoToBook(bookDto);
         return bookMapper.bookToBookDto(bookService.save(book));
     }
     @PreAuthorize("hasRole('ADMIN')")
@@ -68,7 +68,7 @@ public class BookController {
     public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @RequestBody BookDto bookDto) {
         return bookService.findById(id)
                 .map(existing -> {
-                    Book updated = bookMapper.bookDtoToBook(bookDto);
+                    BookEntity updated = bookMapper.bookDtoToBook(bookDto);
                     updated.setId(existing.getId());
                     return ResponseEntity.ok(bookMapper.bookToBookDto(bookService.save(updated)));
                 })

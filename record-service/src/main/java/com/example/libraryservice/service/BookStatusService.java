@@ -1,6 +1,6 @@
 package com.example.libraryservice.service;
 
-import com.example.libraryservice.entity.BookStatus;
+import com.example.libraryservice.entity.BookStatusEntity;
 import com.example.libraryservice.repository.BookStatusRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +19,11 @@ public class BookStatusService {
         this.bookStatusRepository = bookStatusRepository;
     }
 
-    public BookStatus addBookStatus(BookStatus bookStatus) {
+    public BookStatusEntity addBookStatus(BookStatusEntity bookStatus) {
         return bookStatusRepository.save(bookStatus);
     }
 
-    public List<BookStatus> getAllBookStatuses() {
+    public List<BookStatusEntity> getAllBookStatuses() {
         return bookStatusRepository.findAll();
     }
 
@@ -31,7 +31,7 @@ public class BookStatusService {
         return bookStatusRepository.findAll()
                 .stream()
                 .filter(bs -> bs.getTakenAt() != null || bs.getReturnAt() != null)
-                .map(BookStatus::getBookId)
+                .map(BookStatusEntity::getBookId)
                 .toList();
     }
 
@@ -43,7 +43,7 @@ public class BookStatusService {
         rabbitTemplate.convertAndSend("busyBooksQueue", busyIds);
     }
 
-    public Optional<BookStatus> getBookStatusById(Long id) {
+    public Optional<BookStatusEntity> getBookStatusById(Long id) {
         return bookStatusRepository.findById(id);
     }
 }

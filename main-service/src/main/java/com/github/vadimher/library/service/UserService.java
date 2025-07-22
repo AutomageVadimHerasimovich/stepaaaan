@@ -1,6 +1,6 @@
 package com.github.vadimher.library.service;
 
-import com.github.vadimher.library.entity.User;
+import com.github.vadimher.library.entity.UserEntity;
 import com.github.vadimher.library.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +23,7 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User register(User user) {
+    public UserEntity register(UserEntity user) {
         try {
             return userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
@@ -38,7 +38,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByUsername(username);
             if (user == null) {
                 throw new UsernameNotFoundException("Пользователь не найден");
             }
