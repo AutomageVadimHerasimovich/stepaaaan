@@ -5,6 +5,7 @@ import com.github.vadimher.library.entity.BookEntity;
 import com.github.vadimher.library.mapper.BookMapper;
 import com.github.vadimher.library.service.BookService;
 import com.github.vadimher.library.service.BusyBooksService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Set;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/library")
 public class BookController {
@@ -27,14 +29,6 @@ public class BookController {
     private final BusyBooksService busyBooksService;
     private final RabbitTemplate rabbitTemplate;
     private final BookMapper bookMapper;
-
-    public BookController(BookService bookService, BusyBooksService busyBooksService,
-                          RabbitTemplate rabbitTemplate, BookMapper bookMapper) {
-        this.bookService = bookService;
-        this.busyBooksService = busyBooksService;
-        this.rabbitTemplate = rabbitTemplate;
-        this.bookMapper = bookMapper;
-    }
 
     @GetMapping("/allbooks")
     public List<BookDto> getAllBooks() {

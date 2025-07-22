@@ -2,6 +2,7 @@ package com.example.libraryservice.controller;
 
 import com.example.libraryservice.entity.BookStatusEntity;
 import com.example.libraryservice.service.BookStatusService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,15 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/book-status")
 public class BookStatusController {
 
     private final BookStatusService bookStatusService;
-
-    public BookStatusController(BookStatusService bookStatusService) {
-        this.bookStatusService = bookStatusService;
-    }
 
     @PostMapping
     public ResponseEntity<BookStatusEntity> addBookStatus(@RequestBody BookStatusEntity bookStatus) {
