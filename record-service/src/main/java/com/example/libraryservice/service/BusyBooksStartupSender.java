@@ -5,18 +5,15 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Profile("!test")
 @Component
 public class BusyBooksStartupSender {
 
     private final BookStatusService bookStatusService;
     private final RabbitTemplate rabbitTemplate;
-
-    public BusyBooksStartupSender(BookStatusService bookStatusService, RabbitTemplate rabbitTemplate) {
-        this.bookStatusService = bookStatusService;
-        this.rabbitTemplate = rabbitTemplate;
-    }
 
     @EventListener(ApplicationReadyEvent.class)
     public void sendBusyBooksOnStartup() {

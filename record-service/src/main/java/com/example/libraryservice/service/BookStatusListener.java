@@ -4,16 +4,13 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import com.example.libraryservice.entity.BookStatusEntity;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Component
 public class BookStatusListener {
     private final BookStatusService bookStatusService;
     private final RabbitTemplate rabbitTemplate;
-
-    public BookStatusListener(BookStatusService bookStatusService, RabbitTemplate rabbitTemplate) {
-        this.bookStatusService = bookStatusService;
-        this.rabbitTemplate = rabbitTemplate;
-    }
 
     @RabbitListener(queues = "bookIdQueue")
     public void receiveBookId(Long bookId) {

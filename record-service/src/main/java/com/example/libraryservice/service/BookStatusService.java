@@ -8,16 +8,13 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 
-
+@RequiredArgsConstructor
 @Service
 public class BookStatusService {
 
     private final BookStatusRepository bookStatusRepository;
-
-    public BookStatusService(BookStatusRepository bookStatusRepository) {
-        this.bookStatusRepository = bookStatusRepository;
-    }
 
     public BookStatusEntity addBookStatus(BookStatusEntity bookStatus) {
         return bookStatusRepository.save(bookStatus);

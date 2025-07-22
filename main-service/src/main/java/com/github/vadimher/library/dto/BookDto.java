@@ -1,13 +1,13 @@
 package com.github.vadimher.library.dto;
 
-import lombok.Data;
+import lombok.Builder;
 
-@Data
-public class BookDto {
-    private Long id;
-    private String title;
-    private String author;
-    private String isbn;
-    private String genre;
-    private String description;
-}
+@Builder(toBuilder = true)
+public record BookDto(
+    Long id,
+    String title,
+    String author,
+    String isbn,
+    String genre,
+    String description
+) {}
