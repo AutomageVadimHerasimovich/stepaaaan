@@ -1,7 +1,6 @@
 package com.github.vadimher.library.service;
 
-import com.github.vadimher.library.entity.Book;
-import com.github.vadimher.library.service.BookPublisher;
+import com.github.vadimher.library.entity.BookEntity;
 import com.github.vadimher.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,21 +20,21 @@ public class BookService {
         this.bookPublisher = bookPublisher;
     }
 
-    public List<Book> findAll() {
+    public List<BookEntity> findAll() {
         return bookRepository.findAll();
     }
 
-    public Optional<Book> findById(Long id) {
+    public Optional<BookEntity> findById(Long id) {
         return bookRepository.findById(id);
     }
 
-    public Optional<Book> findByIsbn(String isbn) {
+    public Optional<BookEntity> findByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn);
     }
 
-    public Book save(Book book) {
+    public BookEntity save(BookEntity book) {
         try {
-            Book saved = bookRepository.save(book);
+            BookEntity saved = bookRepository.save(book);
             bookPublisher.sendBookId(saved.getId());
             return saved;
         } catch (DataIntegrityViolationException e) {

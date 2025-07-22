@@ -1,6 +1,5 @@
 package com.example.libraryservice.service;
 
-import com.example.libraryservice.service.BookStatusService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
