@@ -1,5 +1,6 @@
 package com.github.vadimher.library.controller;
 
+import com.github.vadimher.library.config.RabbitProps;
 import com.github.vadimher.library.dto.BookDto;
 import com.github.vadimher.library.entity.BookEntity;
 import com.github.vadimher.library.mapper.BookMapper;
@@ -28,6 +29,7 @@ public class BookController {
     private final BookService bookService;
     private final BusyBooksService busyBooksService;
     private final RabbitTemplate rabbitTemplate;
+    private final RabbitProps rabbitProps;
     private final BookMapper bookMapper;
 
     @GetMapping("/allbooks")
@@ -79,7 +81,7 @@ public class BookController {
     @GetMapping("/freebooks")
     public List<BookDto> getFreeBooks() {
         // Запросить актуальный список занятых книг через RabbitMQ
-        rabbitTemplate.convertAndSend("busyBooksRequestQueue", "get");
+        rabbitTemplate.convertAndSend(rabbitProps.getBusyBooksRequestQueue(), "get");
         // Подождать обновления busyBooksService (в реальном проекте — асинхронно, тут — сразу возвращаем текущий список)
         Set<Long> busyIds = busyBooksService.getBusyBookIds();
         return bookService.findAll().stream()
