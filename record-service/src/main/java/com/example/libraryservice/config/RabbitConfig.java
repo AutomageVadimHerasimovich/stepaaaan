@@ -20,6 +20,11 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Queue bookIdQueue() {
+        return new Queue("bookIdQueue", true);
+    }
+
+    @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }

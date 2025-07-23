@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   library-backend:
     image: library_backend
@@ -11,7 +9,9 @@ services:
       context: ./main-service
     depends_on:
       library_db:
-        condition: service_healthy
+          condition: service_healthy
+      rabbitmq:
+          condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://library_db:5432/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
@@ -67,6 +67,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
 volumes:
   db-data:

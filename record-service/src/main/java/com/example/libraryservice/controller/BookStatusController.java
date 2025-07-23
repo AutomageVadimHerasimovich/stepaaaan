@@ -1,6 +1,8 @@
 package com.example.libraryservice.controller;
 
+import com.example.libraryservice.dto.BookStatusDto;
 import com.example.libraryservice.entity.BookStatusEntity;
+import com.example.libraryservice.mapper.BookStatusMapper;
 import com.example.libraryservice.service.BookStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,21 +21,26 @@ import java.util.List;
 public class BookStatusController {
 
     private final BookStatusService bookStatusService;
+    private final BookStatusMapper bookStatusMapper;
 
     @PostMapping
-    public ResponseEntity<BookStatusEntity> addBookStatus(@RequestBody BookStatusEntity bookStatus) {
-        BookStatusEntity saved = bookStatusService.addBookStatus(bookStatus);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<BookStatusDto> addBookStatus(@RequestBody BookStatusDto bookStatusDto) {
+        BookStatusEntity saved = bookStatusService.addBookStatus(bookStatusMapper.toEntity(bookStatusDto));
+        return ResponseEntity.ok(bookStatusMapper.toDto(saved));
     }
 
     @GetMapping
-    public ResponseEntity<List<BookStatusEntity>> getAllBookStatuses() {
-        return ResponseEntity.ok(bookStatusService.getAllBookStatuses());
+    public ResponseEntity<List<BookStatusDto>> getAllBookStatuses() {
+        List<BookStatusDto> dtos = bookStatusService.getAllBookStatuses().stream()
+                .map(bookStatusMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookStatusEntity> getBookStatusById(@PathVariable Long id) {
+    public ResponseEntity<BookStatusDto> getBookStatusById(@PathVariable Long id) {
         return bookStatusService.getBookStatusById(id)
+                .map(bookStatusMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

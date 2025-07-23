@@ -1,6 +1,8 @@
 package com.github.vadimher.library.controller;
 
+import com.github.vadimher.library.dto.UserDto;
 import com.github.vadimher.library.entity.UserEntity;
+import com.github.vadimher.library.mapper.UserMapper;
 import com.github.vadimher.library.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{username}")
@@ -36,12 +39,13 @@ public class AuthController {
             model.addAttribute("error", "Пароли не совпадают");
             return "register";
         }
-        UserEntity user = new UserEntity();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setRole("ROLE_USER");
+        UserDto userDto = UserDto.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .role("ROLE_USER")
+                .build();
         try {
-            userService.register(user);
+            userService.register(userMapper.userDtoToUser(userDto));
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", "Пользователь с таким именем уже существует");
