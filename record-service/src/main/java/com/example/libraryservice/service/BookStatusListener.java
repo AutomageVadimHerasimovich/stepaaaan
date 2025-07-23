@@ -1,5 +1,6 @@
 package com.example.libraryservice.service;
 
+import com.example.libraryservice.config.RabbitProps;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import com.example.libraryservice.entity.BookStatusEntity;
@@ -11,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 public class BookStatusListener {
     private final BookStatusService bookStatusService;
     private final RabbitTemplate rabbitTemplate;
+    private final RabbitProps rabbitProps;
 
-    @RabbitListener(queues = "bookIdQueue")
+    @RabbitListener(queues = "#{rabbitProps.bookIdQueue}")
     public void receiveBookId(Long bookId) {
-        // Создаём новую запись BookStatus с bookId, остальные поля null
         BookStatusEntity status = new BookStatusEntity();
         status.setBookId(bookId);
         status.setTakenAt(null);
@@ -22,10 +23,9 @@ public class BookStatusListener {
         bookStatusService.addBookStatus(status);
     }
 
-    @RabbitListener(queues = "busyBooksRequestQueue")
+    @RabbitListener(queues = "#{rabbitProps.busyBooksRequestQueue}")
     public void onBusyBooksRequest(String request) {
-        // При получении любого сообщения отправляем список занятых книг
         var busyIds = bookStatusService.getBusyBookIds();
-        rabbitTemplate.convertAndSend("busyBooksQueue", busyIds);
+        rabbitTemplate.convertAndSend(rabbitProps.getBusyBooksQueue(), busyIds);
     }
 }

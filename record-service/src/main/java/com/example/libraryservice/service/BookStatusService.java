@@ -1,5 +1,6 @@
 package com.example.libraryservice.service;
 
+import com.example.libraryservice.config.RabbitProps;
 import com.example.libraryservice.entity.BookStatusEntity;
 import com.example.libraryservice.repository.BookStatusRepository;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ public class BookStatusService {
         return bookStatusRepository.findAll();
     }
 
+    private final RabbitProps rabbitProps;
+
     public List<Long> getBusyBookIds() {
         return bookStatusRepository.findAll()
                 .stream()
@@ -37,7 +40,7 @@ public class BookStatusService {
 
     public void sendBusyBookIdsToRabbit() {
         List<Long> busyIds = getBusyBookIds();
-        rabbitTemplate.convertAndSend("busyBooksQueue", busyIds);
+        rabbitTemplate.convertAndSend(rabbitProps.getBusyBooksQueue(), busyIds);
     }
 
     public Optional<BookStatusEntity> getBookStatusById(Long id) {

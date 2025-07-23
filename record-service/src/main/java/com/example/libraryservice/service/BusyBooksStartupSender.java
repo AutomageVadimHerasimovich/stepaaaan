@@ -1,5 +1,6 @@
 package com.example.libraryservice.service;
 
+import com.example.libraryservice.config.RabbitProps;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
@@ -14,10 +15,11 @@ public class BusyBooksStartupSender {
 
     private final BookStatusService bookStatusService;
     private final RabbitTemplate rabbitTemplate;
+    private final RabbitProps rabbitProps;
 
     @EventListener(ApplicationReadyEvent.class)
     public void sendBusyBooksOnStartup() {
         var busyIds = bookStatusService.getBusyBookIds();
-        rabbitTemplate.convertAndSend("busyBooksQueue", busyIds);
+        rabbitTemplate.convertAndSend(rabbitProps.getBusyBooksQueue(), busyIds);
     }
 }
