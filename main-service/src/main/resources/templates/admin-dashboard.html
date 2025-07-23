@@ -365,6 +365,26 @@
             </form>
         </div>
     </div>
+    <!-- Модальное окно для редактирования статуса книги -->
+    <div class="modal" id="bookStatusModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeStatusModal()">&times;</span>
+            <h2 id="statusModalTitle">Редактировать статус книги</h2>
+            <form id="bookStatusForm">
+                <input type="hidden" id="statusId">
+                <label>ID книги</label>
+                <input type="number" id="statusBookId" required>
+                <label>Дата взятия (takenAt)</label>
+                <input type="datetime-local" id="statusTakenAt">
+                <label>Дата возврата (returnAt)</label>
+                <input type="datetime-local" id="statusReturnAt">
+                <div class="modal-actions">
+                    <button type="submit" id="statusModalSaveBtn">Сохранить</button>
+                    <button type="button" onclick="closeStatusModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script>
         const API = {
             all: '/api/library/allbooks',
@@ -426,6 +446,7 @@
                     <td>${book.description}</td>
                     <td>
                         <button class="edit-btn" onclick="openEditModal(${book.id})">Редактировать</button>
+                        <button class="edit-btn" onclick="openEditBookStatusModal(${book.id})">Изменить статус</button>
                         <button class="delete-btn" onclick="deleteBook(${book.id})">Удалить</button>
                     </td>
                 </tr>`;
@@ -455,6 +476,43 @@
             document.getElementById('bookDescription').value = book.description;
             document.getElementById('bookModal').classList.add('active');
             document.getElementById('modalSaveBtn').onclick = updateBook;
+        }
+
+        // --- API для record-service ---
+        const RECORD_SERVICE_URL = 'http://localhost:8081'; // теперь порт 8081
+        const BOOK_STATUS_API = {
+            all: RECORD_SERVICE_URL + '/api/book-status',
+            byId: id => RECORD_SERVICE_URL + `/api/book-status/${id}`,
+            add: RECORD_SERVICE_URL + '/api/book-status',
+            update: id => RECORD_SERVICE_URL + `/api/book-status/${id}`
+        };
+
+        async function openEditBookStatusModal(bookId) {
+            document.getElementById('bookStatusModal').classList.add('active');
+            // Получаем статус книги по новому эндпоинту
+            fetch(RECORD_SERVICE_URL + '/api/book-status/by-book/' + bookId)
+                .then(res => res.ok ? res.json() : Promise.reject())
+                .then(status => {
+                    document.getElementById('statusId').value = status.id || '';
+                    document.getElementById('statusBookId').value = status.bookId || bookId;
+                    document.getElementById('statusTakenAt').value = status.takenAt ? status.takenAt.substring(0, 16) : '';
+                    document.getElementById('statusReturnAt').value = status.returnAt ? status.returnAt.substring(0, 16) : '';
+                })
+                .catch(() => {
+                    document.getElementById('statusId').value = '';
+                    document.getElementById('statusBookId').value = bookId;
+                    document.getElementById('statusTakenAt').value = '';
+                    document.getElementById('statusReturnAt').value = '';
+                });
+        }
+
+        // Привязка обработчика submit для формы статуса книги
+        document.getElementById('bookStatusForm').addEventListener('submit', async function(e) {
+            await updateBookStatus(e);
+        });
+
+        function closeStatusModal() {
+            document.getElementById('bookStatusModal').classList.remove('active');
         }
 
         async function saveBook(e) {
@@ -490,6 +548,41 @@
             }
         }
 
+        async function updateBookStatus(e) {
+            e.preventDefault();
+            const id = document.getElementById('statusId').value;
+            const takenAtRaw = document.getElementById('statusTakenAt').value;
+            const returnAtRaw = document.getElementById('statusReturnAt').value;
+            // Преобразуем к ISO без миллисекунд, если есть
+            const takenAt = takenAtRaw ? new Date(takenAtRaw).toISOString().slice(0, 16) : null;
+            const returnAt = returnAtRaw ? new Date(returnAtRaw).toISOString().slice(0, 16) : null;
+            const bookStatus = {
+                bookId: document.getElementById('statusBookId').value,
+                takenAt: takenAtRaw || null,
+                returnAt: returnAtRaw || null
+            };
+            let res;
+            if (!id) {
+                res = await fetch(BOOK_STATUS_API.add, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookStatus)
+                });
+            } else {
+                res = await fetch(BOOK_STATUS_API.update(id), {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookStatus)
+                });
+            }
+            if (res.ok) {
+                closeStatusModal();
+                fetchAllBooks();
+            } else {
+                alert('Ошибка при сохранении статуса книги');
+            }
+        }
+
         async function deleteBook(id) {
             if (!confirm('Удалить книгу?')) return;
             const res = await fetch(API.delete(id), { method: 'DELETE' });
@@ -512,6 +605,10 @@
 
         function closeModal() {
             document.getElementById('bookModal').classList.remove('active');
+        }
+
+        function closeStatusModal() {
+            document.getElementById('bookStatusModal').classList.remove('active');
         }
 
         window.onload = fetchAllBooks;

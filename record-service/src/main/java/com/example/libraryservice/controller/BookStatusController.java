@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,5 +56,24 @@ public class BookStatusController {
     public ResponseEntity<Void> sendBusyBookIdsToRabbit() {
         bookStatusService.sendBusyBookIdsToRabbit();
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookStatusDto> updateBookStatus(@PathVariable Long id, @RequestBody BookStatusDto bookStatusDto) {
+        BookStatusEntity updatedFields = bookStatusMapper.toEntity(bookStatusDto);
+        return bookStatusService.updateBookStatus(id, updatedFields)
+                .map(bookStatusMapper::toDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/by-book/{bookId}")
+    public ResponseEntity<BookStatusDto> getBookStatusByBookId(@PathVariable Long bookId) {
+        return bookStatusService.getAllBookStatuses().stream()
+                .filter(status -> status.getBookId() != null && status.getBookId().equals(bookId))
+                .findFirst()
+                .map(bookStatusMapper::toDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

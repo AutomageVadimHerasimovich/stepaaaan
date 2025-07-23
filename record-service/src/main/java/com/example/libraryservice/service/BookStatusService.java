@@ -46,4 +46,15 @@ public class BookStatusService {
     public Optional<BookStatusEntity> getBookStatusById(Long id) {
         return bookStatusRepository.findById(id);
     }
+
+    public Optional<BookStatusEntity> updateBookStatus(Long id, BookStatusEntity updatedFields) {
+        return bookStatusRepository.findById(id).map(existing -> {
+            if (updatedFields.getBookId() != null) {
+                existing.setBookId(updatedFields.getBookId());
+            }
+            existing.setTakenAt(updatedFields.getTakenAt());
+            existing.setReturnAt(updatedFields.getReturnAt());
+            return bookStatusRepository.save(existing);
+        });
+    }
 }
