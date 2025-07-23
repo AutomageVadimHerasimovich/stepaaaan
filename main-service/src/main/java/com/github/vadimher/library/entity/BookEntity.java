@@ -22,12 +22,17 @@ public class BookEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
     @NotNull
-    @Column(unique = true, nullable = false)
+    @Column(name = "isbn", unique = true, nullable = false)
     private String isbn;
+    @Column(name = "title")
     private String title;
+    @Column(name = "genre")
     private String genre;
+    @Column(name = "description")
     private String description;
+    @Column(name = "author")
     private String author;
 }

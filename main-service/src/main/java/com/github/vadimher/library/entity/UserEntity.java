@@ -21,17 +21,18 @@ import lombok.NoArgsConstructor;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @NotNull
-    @Column(unique = true, nullable = false)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private String role;
 }
