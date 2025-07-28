@@ -14,4 +14,8 @@ public class BookPublisher {
     public void sendBookId(Long bookId) {
         rabbitTemplate.convertAndSend(rabbitProps.getBookIdQueue(), bookId);
     }
+
+    public void sendDeleteBookRequest(Long bookId) {
+        rabbitTemplate.convertAndSend(rabbitProps.getBookIdQueue(), "delete:" + bookId);
+    }
 }

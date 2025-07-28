@@ -10,12 +10,18 @@ import java.util.Optional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class BookStatusService {
 
     private final BookStatusRepository bookStatusRepository;
+    private final RabbitProps rabbitProps;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     public BookStatusEntity addBookStatus(BookStatusEntity bookStatus) {
         return bookStatusRepository.save(bookStatus);
@@ -25,8 +31,6 @@ public class BookStatusService {
         return bookStatusRepository.findAll();
     }
 
-    private final RabbitProps rabbitProps;
-
     public List<Long> getBusyBookIds() {
         return bookStatusRepository.findAll()
                 .stream()
@@ -34,9 +38,6 @@ public class BookStatusService {
                 .map(BookStatusEntity::getBookId)
                 .toList();
     }
-
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
 
     public void sendBusyBookIdsToRabbit() {
         List<Long> busyIds = getBusyBookIds();
@@ -56,5 +57,27 @@ public class BookStatusService {
             existing.setReturnAt(updatedFields.getReturnAt());
             return bookStatusRepository.save(existing);
         });
+    }
+
+    /**
+     * Удаляет статус книги по ID книги
+     * @param bookId ID книги
+     */
+    public void deleteBookStatusByBookId(Long bookId) {
+        log.info("Attempting to delete book status for book ID: {}", bookId);
+        List<BookStatusEntity> statuses = bookStatusRepository.findAll()
+                .stream()
+                .filter(status -> bookId.equals(status.getBookId()))
+                .toList();
+
+        if (statuses.isEmpty()) {
+            log.warn("No book status found for book ID: {}", bookId);
+        } else {
+            log.info("Found {} status(es) to delete for book ID: {}", statuses.size(), bookId);
+            statuses.forEach(status -> {
+                bookStatusRepository.deleteById(status.getId());
+                log.info("Deleted book status with ID: {} for book ID: {}", status.getId(), bookId);
+            });
+        }
     }
 }

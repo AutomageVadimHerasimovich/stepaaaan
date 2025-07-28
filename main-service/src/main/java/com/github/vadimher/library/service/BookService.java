@@ -34,8 +34,13 @@ public class BookService {
 
     public BookEntity save(BookEntity book) {
         try {
+            boolean isNewBook = book.getId() == null;
             BookEntity saved = bookRepository.save(book);
-            bookPublisher.sendBookId(saved.getId());
+
+            if (isNewBook) {
+                bookPublisher.sendBookId(saved.getId());
+            }
+
             return saved;
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("ISBN busy");
@@ -43,6 +48,7 @@ public class BookService {
     }
 
     public void delete(Long id) {
+        bookPublisher.sendDeleteBookRequest(id);
         bookRepository.deleteById(id);
     } 
 }
