@@ -4,7 +4,7 @@ LABEL authors="herasimovich-v"
 
 WORKDIR /app
 
-COPY target/library-0.0.1-SNAPSHOT.jar app.jar
+COPY target/app.jar app.jar
 COPY wait-for-it.sh /app/wait-for-it.sh
 
 EXPOSE 8080
