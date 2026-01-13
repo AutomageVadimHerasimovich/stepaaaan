@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ошибка | Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', Arial, sans-serif;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border-radius: 20px;
+            padding: 40px 60px;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 1.2s cubic-bezier(.42,0,.58,1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .error-code {
+            font-size: 7rem;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 10px;
+            text-shadow: 0 2px 20px #ee0979;
+            animation: bounce 1.5s infinite alternate;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
+        .error-message {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 20px;
+            animation: slideIn 1.2s cubic-bezier(.42,0,.58,1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(90deg, #ee0979 0%, #ff6a00 100%);
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 4px 16px rgba(238,9,121,0.2);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 30px;
+            text-decoration: none;
+            animation: btnAppear 1.5s cubic-bezier(.42,0,.58,1);
+        }
+        .btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 32px rgba(238,9,121,0.3);
+        }
+        @keyframes btnAppear {
+            from { opacity: 0; transform: scale(0.7); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .waves {
+            position: absolute;
+            left: 0; right: 0; bottom: -40px;
+            width: 100%;
+            height: 120px;
+            z-index: -1;
+        }
+        .waves svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            animation: waveMove 8s linear infinite;
+        }
+        @keyframes waveMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100px); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">Ошибка</div>
+        <div class="error-message">Что-то пошло не так.<br>Пожалуйста, попробуйте позже или вернитесь на главную.</div>
+        <a href="/" class="btn">На главную</a>
+        <div class="waves">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0 C300,100 900,0 1200,100 L1200,120 L0,120 Z" fill="#fff" fill-opacity="0.3">
+                    <animate attributeName="d" dur="6s" repeatCount="indefinite"
+                        values="M0,0 C300,100 900,0 1200,100 L1200,120 L0,120 Z;
+                                M0,0 C400,0 800,100 1200,0 L1200,120 L0,120 Z;
+                                M0,0 C300,100 900,0 1200,100 L1200,120 L0,120 Z" />
+                </path>
+            </svg>
+        </div>
+    </div>
+</body>
+</html>
+
